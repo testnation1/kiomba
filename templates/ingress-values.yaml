@@ -1,0 +1,3 @@
+# templates/ingress-values.yaml
+ingress:
+  host: airflow.example.com
