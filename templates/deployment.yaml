@@ -1,0 +1,40 @@
+# templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "airflow.fullname" . }}
+  labels:
+    {{- include "airflow.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.airflow.scheduler.replicas }}
+  selector:
+    matchLabels:
+      {{- include "airflow.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "airflow.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: airflow
+          image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: FLOWER_HOST
+              value: "0.0.0.0"
+            # Add other environment variables as needed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "airflow.fullname" . }}-web
+  labels:
+    {{- include "airflow.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.airflow.web.service.port }}
+      targetPort: 8080
+  selector:
+    {{- include "airflow.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.airflow.web.service.type }}
