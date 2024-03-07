@@ -1,0 +1,12 @@
+# values.yaml
+airflow:
+  image:
+    repository: apache/airflow
+    tag: 2.2.0
+  web:
+    service:
+      type: LoadBalancer
+      port: 8080
+  scheduler:
+    replicas: 1
+  executor: CeleryExecutor
